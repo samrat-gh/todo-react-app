@@ -13,9 +13,9 @@ function App() {
   return (
     <themeContext.Provider value={theme}>
       <main
-        className={
-          theme === 'light' ? 'h-screen bg-blue-800' : 'h-screen bg-red-900'
-        }
+        className={`h-screen
+          ${theme === 'dark' ? 'bg-teal-600' : 'bg-zinc-200'
+  }`}
       >
         <Header
           name='Todo with react'

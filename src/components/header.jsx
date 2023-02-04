@@ -6,25 +6,25 @@ export default function Header({ name, toggleTheme }) {
 
   return (
     <header
-      className={
-        theme === 'light'
-          ? 'flex justify-between bg-gray-900 p-1'
-          : 'flex justify-between bg-gray-300 p-1'
-      }
+      className={ `flex justify-between shadow mb-5 p-1
+        ${theme === 'light'
+          ? 'bg-gray-300'
+          : 'bg-gray-900'
+  }`}
     >
       <div>
         <button>
           {theme === 'light' ? (
             <img
-              src={'darksettings.svg'}
-              alt='White setting icon'
+              src={'lightsettings.svg'}
+              alt='Black setting icon for light mode'
               width={24}
               height={24}
             />
           ) : (
             <img
-              src={'lightsettings.svg'}
-              alt='Dark setting icon'
+              src={'Darksettings.svg'}
+              alt='White setting icon for dark mode'
               width={24}
               height={24}
             />
@@ -35,8 +35,8 @@ export default function Header({ name, toggleTheme }) {
       <div
         className={
           theme === 'light'
-            ? 'text-white text-center font-bold'
-            : 'text-black text-center font-bold'
+            ? 'text-black text-center font-bold'
+            : 'text-white text-center font-bold'
         }
       >
         {name}
@@ -47,12 +47,16 @@ export default function Header({ name, toggleTheme }) {
           {theme === 'light' ? (
             <img
               src={'lightmoon.svg'}
-              alt='Light icon'
+              alt='Black moon icon for light mode'
               width={24}
               height={24}
             />
           ) : (
-            <img src={'darkmoon.svg'} alt='Dark icon' width={24} height={24} />
+            <img 
+            src={'darkmoon.svg'} 
+            alt='White icon for dark mode' 
+            width={24}
+            height={24} />
           )}
         </button>
       </div>
