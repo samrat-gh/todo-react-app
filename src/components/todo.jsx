@@ -1,17 +1,62 @@
-import { useContext, useState } from 'react';
+import { useContext, useRef, useState} from 'react';
 import { themeContext } from '../App';
 
+function fetchData() {
+  var data = JSON.parse(localStorage.getItem('dataSet'));
+  console.log("arrival", data);
+
+  if(data != null) {
+    return data;
+  } 
+  else {
+    data = [];
+    return data;
+  }  
+}
+
+
 export default function Todo() {
-  // const [task, setTask] = useState({
-  //   task1:  '',
-  //   description: '',
-  //   time: '',});
+    const theme = useContext(themeContext);
+    const data =  useRef();
+    const [availability, setAvailability] = useState(false);
+    var [count, setCount] = useState(0)
 
-  
 
-  const [visibility, setVisibility] = useState(false);
 
-  const theme = useContext(themeContext);
+    function getInputData(){
+       const task = data.current.value;
+       data.current.value = '';
+       setAvailability(!availability);
+       setCount(count + 1);
+       console.log("counted ",count);
+       crudOperations(task);
+    }
+
+    function crudOperations(task){
+      var dataSet = fetchData();
+      console.log("dataset", dataSet);
+
+      if(dataSet != null){
+        console.log("fetched");
+        setAvailability(availability === true);
+      }
+      else {
+        dataSet = [];
+        setAvailability(availability === false);
+      }
+       dataSet.push(task);
+       localStorage.setItem('dataSet', JSON.stringify(dataSet));
+    }
+
+    function clearData() {
+      localStorage.clear();
+      setAvailability(availability === false);
+      setCount(count = 0);
+    }
+
+
+
+
   return (
     <div
       className={ `w-fit h-auto rounded-md p-3 m-auto
@@ -29,20 +74,12 @@ export default function Todo() {
             : 'bg-cyan-900 text-gray-100'}
         `}>
             <input 
+            ref={data}
             type='text'
             placeholder='Add task here' 
             className={`bg-transparent p-1 rounded shadow-sm placeholder-slate-100`}
-            onClick={() => setVisibility(!visibility) }
-
-            {...visibility && (
-              <p>ABCDEFGH </p>
-                  //  <input 
-                  //  type="text"
-                  //  placeholder="write about your task here"
-                  //  />
-            )}
-
             />
+
             <button
             className={`
             
@@ -61,23 +98,29 @@ export default function Todo() {
               height={35}
 
               className='inline-block relative bottom-1'
+               onClick={getInputData}
 
               />
 
 
             </button>
-        </div>
+            <button
+            onClick={clearData}>
 
-      <TodoElements />
+            Clear Data 
+            </button>
+        </div>
+          
+      <TodoElements props={{availability, theme, count}} />
     </div>
   );
 }
 
+function TodoElements(props){
+  const {availability, theme, count} = props;
+  const dataSet = fetchData();
+  const status = useRef(false);
 
-function TodoElements(){
-  const theme = useContext(themeContext);
-
-  
   return(
     <div className={
       `w-full h-80 mt-4 rounded
@@ -86,13 +129,34 @@ function TodoElements(){
       : 'bg-sky-800'}` 
     }>
 
-      <div>
-        <input type='checkbox' />
-          Learn React
-          <button> ... </button>
+{!availability ? (
+      dataSet.map((task, index) => (
+      <div 
+      key={index}
+      className='flex justify-between p-1'
+      >
+        <div>
+        <input ref={status} type="checkbox"/>
+        <span 
+        className='p-1'>
+          {task} </span> 
+
+          <span className='hidden'>
+          {`No of tasks : ${count}`} </span>
+         </div>
+  
+        <button>
+          <img 
+          src="darkdots.svg" 
+          alt="White tripple dots"
+          width={18}
+          height={18}
+          />
+        </button>
       </div>
-           
-    </div>
+    ))
+ 
+ ) : ( <div>Not available</div> )} 
+</div>
   )
 }
-
