@@ -23,7 +23,7 @@ export default function Header({ name, toggleTheme }) {
             />
           ) : (
             <img
-              src={'Darksettings.svg'}
+              src={'darksettings.svg'}
               alt='White setting icon for dark mode'
               width={24}
               height={24}

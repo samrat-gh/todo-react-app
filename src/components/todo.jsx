@@ -13,14 +13,15 @@ function fetchData() {
     return data;
   }  
 }
-
-
+   
 export default function Todo() {
     const theme = useContext(themeContext);
     const data =  useRef();
     const [availability, setAvailability] = useState(false);
     var [count, setCount] = useState(0)
+    
 
+    const [approval, setApproval] = useState(false);
 
 
     function getInputData(){
@@ -32,6 +33,7 @@ export default function Todo() {
        crudOperations(task);
     }
 
+    
     function crudOperations(task){
       var dataSet = fetchData();
       console.log("dataset", dataSet);
@@ -48,14 +50,41 @@ export default function Todo() {
        localStorage.setItem('dataSet', JSON.stringify(dataSet));
     }
 
-    function clearData() {
-      localStorage.clear();
-      setAvailability(availability === false);
-      setCount(count = 0);
+
+     function triggerWarning(){
+      console.log("trigger 1", approval);
+      if(approval !== true){
+      setApproval(approval => !approval)
+      console.log("trigger 2", approval)
+    };
+
+      
+     }
+
+    function myDecision(showDecision){
+      if(showDecision === true && approval === false){
+        setApproval(approval => !approval)
+      }
+      else if (showDecision === false && approval === true){
+        setApproval(approval => !approval)
+      }
+      clearData();
+      setApproval(!approval);
     }
 
 
 
+    function clearData() {
+      console.log("phase 1 pass");
+      console.log("phase 2 pass");
+
+      if(approval){
+      console.log("phase 3 pass");
+      localStorage.clear('dataSet');
+      setAvailability(availability === false);
+      setCount(count = 0);
+    }
+    }
 
   return (
     <div
@@ -68,7 +97,7 @@ export default function Todo() {
 
       <div 
         className={
-            `w-fit pt-1 rounded
+            `w-fit pt-1 rounded leading-loose
             ${theme === 'light' 
             ? 'bg-zinc-400' 
             : 'bg-cyan-900 text-gray-100'}
@@ -105,19 +134,45 @@ export default function Todo() {
 
             </button>
             <button
-            onClick={clearData}>
+            onClick={triggerWarning}>
 
-            Clear Data 
+              <img
+              src={`${theme === 'light'
+               ? 'lightdelete.svg'
+                : 'darkdelete.svg'}`}
+
+                alt={`${theme === 'light'
+                ? 'Black delete button for light mode'
+                : 'White delete button for dark mode'
+              }`}
+
+              className='inline-block relative bottom-1 ml-1'
+
+              width={28}
+              height={28}
+
+              />
             </button>
+
+            {approval ? (
+                  <div className='bg-yellow-800 text-white'>
+                  <h3> You are about to delete all the tasks, confirm with yes or No? </h3>
+                  <button onClick={myDecision(true)}> yes</button>
+                  <button onClick={myDecision(false)}> No </button>
+                </div>
+            ) : (<div>
+                      no no no
+              </div>)}
         </div>
           
-      <TodoElements props={{availability, theme, count}} />
+      <TodoElements props={{availability, count}} />
     </div>
   );
 }
 
-function TodoElements(props){
-  const {availability, theme, count} = props;
+
+function TodoElements({availability, count}){
+  const theme = useContext(themeContext);
   const dataSet = fetchData();
   const status = useRef(false);
 
@@ -125,9 +180,9 @@ function TodoElements(props){
     <div className={
       `w-full h-80 mt-4 rounded
       ${theme === 'light' 
-      ? 'bg-stone-600' 
-      : 'bg-sky-800'}` 
-    }>
+      ?'bg-stone-600' 
+      :'bg-sky-800'
+      }`}>
 
 {!availability ? (
       dataSet.map((task, index) => (
@@ -160,3 +215,5 @@ function TodoElements(props){
 </div>
   )
 }
+
+
