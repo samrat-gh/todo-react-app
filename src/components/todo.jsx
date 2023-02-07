@@ -1,5 +1,9 @@
-import { useContext, useRef, useState} from 'react';
+import { createContext, useContext, useRef, useState} from 'react';
 import { themeContext } from '../App';
+import WarningModal from './Modal';
+
+export const modalContext = createContext(null);
+
 
 function fetchData() {
   var data = JSON.parse(localStorage.getItem('dataSet'));
@@ -21,7 +25,7 @@ export default function Todo() {
     var [count, setCount] = useState(0)
     
 
-    const [approval, setApproval] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
 
     function getInputData(){
@@ -49,45 +53,21 @@ export default function Todo() {
        dataSet.push(task);
        localStorage.setItem('dataSet', JSON.stringify(dataSet));
     }
-
-
-     function triggerWarning(){
-      console.log("trigger 1", approval);
-      if(approval !== true){
-      setApproval(approval => !approval)
-      console.log("trigger 2", approval)
-    };
-
       
+
+     function quickFix(){
+      setShowModal(true);
      }
 
-    function myDecision(showDecision){
-      if(showDecision === true && approval === false){
-        setApproval(approval => !approval)
-      }
-      else if (showDecision === false && approval === true){
-        setApproval(approval => !approval)
-      }
-      clearData();
-      setApproval(!approval);
-    }
+    // function clearData() 
+    //   localStorage.clear('dataSet');
+    //   setAvailability(availability === false);
+    //   setCount(count = 0);
+    //     }
+    
 
-
-
-    function clearData() {
-      console.log("phase 1 pass");
-      console.log("phase 2 pass");
-
-      if(approval){
-      console.log("phase 3 pass");
-      localStorage.clear('dataSet');
-      setAvailability(availability === false);
-      setCount(count = 0);
-    }
-    }
-
-  return (
-    <div
+    return (
+      <div
       className={ `w-fit h-auto rounded-md p-3 m-auto
         ${theme === 'light'
           ? 'bg-neutral-500 text-white'
@@ -97,7 +77,7 @@ export default function Todo() {
 
       <div 
         className={
-            `w-fit pt-1 rounded leading-loose
+            `w-fit rounded leading-loose p-1
             ${theme === 'light' 
             ? 'bg-zinc-400' 
             : 'bg-cyan-900 text-gray-100'}
@@ -134,7 +114,7 @@ export default function Todo() {
 
             </button>
             <button
-            onClick={triggerWarning}>
+            onClick={quickFix}>
 
               <img
               src={`${theme === 'light'
@@ -154,21 +134,16 @@ export default function Todo() {
               />
             </button>
 
-            {approval ? (
-                  <div className='bg-yellow-800 text-white'>
-                  <h3> You are about to delete all the tasks, confirm with yes or No? </h3>
-                  <button onClick={myDecision(true)}> yes</button>
-                  <button onClick={myDecision(false)}> No </button>
-                </div>
-            ) : (<div>
-                      no no no
-              </div>)}
+               
+              {showModal && (
+                <WarningModal setShowModal={setShowModal}/>
+              )}
         </div>
           
       <TodoElements props={{availability, count}} />
     </div>
-  );
-}
+  )}
+
 
 
 function TodoElements({availability, count}){
@@ -215,5 +190,3 @@ function TodoElements({availability, count}){
 </div>
   )
 }
-
-
