@@ -21,7 +21,6 @@ function fetchData() {
 export default function Todo() {
     const theme = useContext(themeContext);
     const data =  useRef();
-    const [availability, setAvailability] = useState(false);
     var [count, setCount] = useState(0)
     
 
@@ -31,9 +30,7 @@ export default function Todo() {
     function getInputData(){
        const task = data.current.value;
        data.current.value = '';
-       setAvailability(!availability);
        setCount(count + 1);
-       console.log("counted ",count);
        crudOperations(task);
     }
 
@@ -44,26 +41,14 @@ export default function Todo() {
 
       if(dataSet != null){
         console.log("fetched");
-        setAvailability(availability === true);
       }
       else {
         dataSet = [];
-        setAvailability(availability === false);
       }
        dataSet.push(task);
        localStorage.setItem('dataSet', JSON.stringify(dataSet));
     }
       
-
-     function quickFix(){
-      setShowModal(true);
-     }
-
-    // function clearData() 
-    //   localStorage.clear('dataSet');
-    //   setAvailability(availability === false);
-    //   setCount(count = 0);
-    //     }
     
 
     return (
@@ -77,7 +62,7 @@ export default function Todo() {
 
       <div 
         className={
-            `w-fit rounded leading-loose p-1
+            `w-fit rounded leading-loose p-1 
             ${theme === 'light' 
             ? 'bg-zinc-400' 
             : 'bg-cyan-900 text-gray-100'}
@@ -86,7 +71,7 @@ export default function Todo() {
             ref={data}
             type='text'
             placeholder='Add task here' 
-            className={`bg-transparent p-1 rounded shadow-sm placeholder-slate-100`}
+            className={`bg-transparent p-1 rounded shadow-sm placeholder-slate-100 mr-1`}
             />
 
             <button
@@ -114,7 +99,7 @@ export default function Todo() {
 
             </button>
             <button
-            onClick={quickFix}>
+            onClick={() => setShowModal(true)}>
 
               <img
               src={`${theme === 'light'
@@ -140,16 +125,42 @@ export default function Todo() {
               )}
         </div>
           
-      <TodoElements props={{availability, count}} />
+      <TodoElements props={count} />
     </div>
   )}
 
 
 
-function TodoElements({availability, count}){
+function TodoElements({props}){
+  const count = props;
   const theme = useContext(themeContext);
   const dataSet = fetchData();
-  const status = useRef(false);
+  const checkbox = useRef();
+  const [status, setStatus] = useState(false);
+  const[taskStatus, setTaskStatus] = useState();
+  console.log("wow", count);
+
+  // function checkStatus(){
+  //   setStatus(!status);
+
+  //   checkbox.current.checked = status;
+
+  // }
+
+  function deleteTask(id){
+    console.log('pre', dataSet);
+    if(dataSet.length < 2) {
+      localStorage.clear('dataSet')
+    }
+
+    else {
+    dataSet.splice(id, 1);
+    localStorage.setItem('dataSet', JSON.stringify(dataSet)); }
+  
+  setTaskStatus(!taskStatus);
+  }
+
+  
 
   return(
     <div className={
@@ -159,34 +170,87 @@ function TodoElements({availability, count}){
       :'bg-sky-800'
       }`}>
 
-{!availability ? (
+    {(
       dataSet.map((task, index) => (
       <div 
       key={index}
-      className='flex justify-between p-1'
+      className={`flex justify-between p-1 h-auto
+      ${status ? 'bg-green-700 text-white' : ''}
+      `}
       >
-        <div>
-        <input ref={status} type="checkbox"/>
+        <div
+        className='overflow-'
+        >
+        <input 
+        ref={checkbox}
+        className={`${status ? 'accent-slate-900': 'accent-current'}`}
+        type="checkbox"
+        onClick={() => setStatus(!status)}
+        />
         <span 
         className='p-1'>
           {task} </span> 
+          
+          <div
+          className={`text-white pl-1 text-xs 
+          ${status === true ? 'inline-block' : 'hidden invisible'}}
+          `}
+          >
 
+            {/* <button>
+              <img 
+              src='tick.svg'
+              alt='red tick to confirm delete'
+              width={18}
+              height={18}
+              />
+
+            <img 
+              src='cross.svg'
+              alt='red tick to confirm delete'
+              width={18}
+              height={18}
+              />
+            </button> */}
+
+
+  
+
+          </div>
           <span className='hidden'>
           {`No of tasks : ${count}`} </span>
          </div>
   
-        <button>
+        <button
+        onClick={() => deleteTask(index)}
+        >
           <img 
-          src="darkdots.svg" 
-          alt="White tripple dots"
-          width={18}
-          height={18}
+          src='darkdelete.svg'
+          alt="White delete button"
+          width={24}
+          height={24}
           />
         </button>
+
+        {taskStatus && (
+         <div className='hidden'>
+             The task has been deleted
+          </div>
+      )}
+
       </div>
     ))
- 
- ) : ( <div>Not available</div> )} 
+    
+
+ )} 
 </div>
   )
 }
+
+
+
+
+// Next :
+// Manage the checked  with two function to two svg img added which to add to completed section
+// Refactor the Code
+// Make the Task UI more beautiful

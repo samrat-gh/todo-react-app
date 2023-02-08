@@ -1,11 +1,11 @@
-import { useContext } from "react";
-import { themeContext } from "../App";
+// import { useContext } from "react";
+// import { themeContext } from "../App";
 
 export default function WarningModal({setShowModal}) {
-    const theme = useContext(themeContext);
+    // const theme = useContext(themeContext);
     function status(value) {
     if(value)
-    localStorage.clear('dataSet');;
+    localStorage.clear('dataSet');
 
 
     console.log("test test gone")
@@ -24,11 +24,11 @@ export default function WarningModal({setShowModal}) {
   }
 
 
-  export function EditMenu(){
+  // export function EditMenu(){
 
-    return(
-        <div>
+  //   return(
+  //       <div>
 
-        </div>
-    )
-  }
+  //       </div>
+  //   )
+  // }
